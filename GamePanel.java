@@ -5,6 +5,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class GamePanel extends JPanel implements MouseListener {
     public enum GameState {Playing, GameWon, GameLost}
@@ -55,10 +56,23 @@ public class GamePanel extends JPanel implements MouseListener {
         attempts.add(currentAttempt);
     }
 
+    public static boolean contains(int[] array, int toFind) {
+        for(int i : array) {
+            if(i == toFind) {
+                return true;
+            } 
+        } 
+        return false;
+    }
+
     public void generalSolution() {
         int[] solutionValues = new int[PuzzleCombination.comboLength];
         for(int i=0; i<solutionValues.length; i++) {
-            solutionValues[i] = rand.nextInt(PuzzleCombination.numOFColors);
+            int number = ThreadLocalRandom.current().nextInt(PuzzleCombination.numOFColors);
+            while(contains(solutionValues, number)) {
+                number = ThreadLocalRandom.current().nextInt(PuzzleCombination.numOFColors);
+            }
+            solutionValues[i] = number;
         }
         solution = new PuzzleCombination(solutionValues, AttemptPanel.panelWidth/2 - PuzzleCombination.panelWidth/2, panelHeight/2);
         gameEndedPanel.setSolution(solution);
